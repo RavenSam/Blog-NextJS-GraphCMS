@@ -1,6 +1,6 @@
 import { request, gql } from "graphql-request"
 
-const graphqlAPI = process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT
+const graphqlAPI = process.env.NEXT_PUBLIC_GRAPHCMS_ENDPOINT
 
 export async function getPosts() {
    const query = gql`
@@ -145,4 +145,36 @@ export async function getCategories() {
    const result = await request(graphqlAPI, query)
 
    return result.categories
+}
+
+export async function submitComment(obj) {
+   const result = await fetch("/api/comments", {
+      method: "POST",
+      headers: {
+         "Content-Type": "application/json",
+      },
+      body: JSON.stringify(obj),
+   })
+
+   return result.json()
+}
+
+export async function getComments(slug) {
+   const query = gql`
+      query GetComments($slug: String!) {
+         comments(where: { post: { slug: $slug } }) {
+            name
+            createdAt
+            comment
+         }
+      }
+   `
+
+   const result = await request(graphqlAPI, query, { slug })
+
+   return result.comments
+}
+
+export async function getFeaturedPosts() {
+   // Featured Posts
 }
